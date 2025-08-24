@@ -76,11 +76,17 @@
     .inside{ position:absolute; left:50%; top:92px; transform:translateX(-50%); display:flex; gap:10px; z-index:2; }
     .inside img{ width:66px; height:66px; object-fit:contain; }
     .sinar{
-      position:absolute; top:-5px; left:-5px; width:76px; height:76px;
-      border:3px solid yellow; border-radius:50%;
-      box-shadow:0 0 10px yellow; animation: glow 1s infinite alternate;
-      pointer-events:none;
-    }
+  position:absolute; 
+  top:-6px; 
+  left:-6px; 
+  width:calc(100% + 12px); 
+  height:calc(100% + 12px);
+  border:3px solid yellow; 
+  border-radius:12px; /* <<< ubah jadi kotak (bukan lingkaran) */
+  box-shadow:0 0 15px yellow, 0 0 25px yellow; 
+  animation: glow 1s infinite alternate;
+  pointer-events:none;
+}
 
     .balance-wrap{ margin:8px auto 6px; width:max-content; filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)); }
     .balance{
@@ -241,55 +247,33 @@
       syncBets(); renderBalance();
     }
 
-  // --- Sorot tile di grid ---
-function highlightTiles(result){
-  tiles.forEach(t=>{
-    // hapus sinar lama
-    t.querySelectorAll(".sinar").forEach(s=>s.remove());
-    // jika termasuk hasil, tambahkan sinar
-    if(result.includes(t.dataset.id)){
-      const sinar = document.createElement("div");
-      sinar.className = "sinar";
-      t.appendChild(sinar);
+    // --- Show result dengan sinar kuning ---
+    function showResult(result){
+      inside.innerHTML = result.map(k=>`
+        <div style="position:relative; display:inline-block;">
+          <img src="${k}.png" alt="${k}" style="width:66px;height:66px;">
+          <div class="sinar"></div>
+        </div>
+      `).join("");
     }
-  });
-}
 
-// --- Show result dengan sinar kuning (piring + grid) ---
-function showResult(result){
-  // tampilkan di piring
-  inside.innerHTML = result.map(k=>`
-    <div style="position:relative; display:inline-block;">
-      <img src="${k}.png" alt="${k}" style="width:66px;height:66px;">
-      <div class="sinar"></div>
-    </div>
-  `).join("");
-
-  // sorot grid juga
-  highlightTiles(result);
-}
     let open=false;
     cover.addEventListener("click", ()=>{
-  if(!open){
-    // Roll hewan, pakai queue dari controller jika ada
-    const use = queuedFromController?.length===3 ? queuedFromController : roll();
-    queuedFromController = null;
-
-    showResult(use);
-    payout(use);
-    cover.classList.add("open");
-    open = true;
-  } else {
-    // Tutup piring: hilangkan gambar hewan di piring
-    inside.innerHTML = "";
-
-    // Hapus sinar di grid juga
-    tiles.forEach(t => t.querySelectorAll(".sinar").forEach(s => s.remove()));
-
-    cover.classList.remove("open");
-    open = false;
-  }
-});
+      if(!open){
+        // Roll hewan, pakai queue dari controller jika ada
+        const use = queuedFromController?.length===3 ? queuedFromController : roll();
+        queuedFromController = null;
+        showResult(use);
+        payout(use);
+        cover.classList.add("open");
+        open=true;
+      }else{
+        // Tutup piring: hilangkan gambar hewan
+        inside.innerHTML = "";
+        cover.classList.remove("open");
+        open=false;
+      }
+    });
 
     // --- Controller eksternal (opsional) ---
     let queuedFromController = null;
