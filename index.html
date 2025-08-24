@@ -247,15 +247,25 @@
       syncBets(); renderBalance();
     }
 
-    // --- Show result dengan sinar kuning ---
     function showResult(result){
-      inside.innerHTML = result.map(k=>`
-        <div style="position:relative; display:inline-block;">
-          <img src="${k}.png" alt="${k}" style="width:66px;height:66px;">
-          <div class="sinar"></div>
-        </div>
-      `).join("");
+  // tampilkan gambar + sinar di piring
+  inside.innerHTML = result.map(k=>`
+    <div style="position:relative; display:inline-block;">
+      <img src="${k}.png" alt="${k}" style="width:80px;height:80px;">
+      <div class="sinar"></div>
+    </div>
+  `).join("");
+
+  // sorot tile di grid
+  tiles.forEach(t=>{
+    t.querySelectorAll(".sinar").forEach(s=>s.remove()); // hapus sinar lama
+    if(result.includes(t.dataset.id)){
+      const sinar = document.createElement("div");
+      sinar.className = "sinar";
+      t.appendChild(sinar);
     }
+  });
+}
 
     let open=false;
     cover.addEventListener("click", ()=>{
