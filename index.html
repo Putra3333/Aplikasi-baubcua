@@ -161,6 +161,15 @@
 
   <script>
     const pool = ["rusa","labu","ayam","ikan","kepiting","udang"];
+    const emojiToId = {
+      "🦌": "rusa",
+      "🍶": "labu",
+      "🐓": "ayam",
+      "🐟": "ikan",
+      "🦀": "kepiting",
+      "🦐": "udang"
+    };
+
     let balance = 5_000_000;
     let currentChip = 10_000;
     const bets = Object.fromEntries(pool.map(k=>[k,0]));
@@ -249,7 +258,7 @@
       const channel = new BroadcastChannel("hewan-channel");
       channel.onmessage = (e)=>{
         if(e.data?.type==="show" && Array.isArray(e.data.hewan) && e.data.hewan.length===3){
-          queuedFromController = e.data.hewan;
+          queuedFromController = e.data.hewan.map(emj => emojiToId[emj]);
         }
       };
     }catch(err){}
