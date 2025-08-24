@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Controller Hewan</title>
+  <style>
+    body { font-family:sans-serif; background:#222; color:#fff; display:flex; justify-content:center; padding:20px; }
+    .panel { background:#333; padding:20px; border-radius:12px; width:300px; text-align:center; }
+    .animals { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:15px; }
+    .animal { font-size:36px; background:#555; border-radius:10px; padding:10px; cursor:pointer; }
+    .animal.selected { background:#00cc66; }
+    button { padding:10px 15px; margin:5px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+    .primary { background:#007bff; color:#fff; }
+    .danger { background:#cc0000; color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h2>Kontrol Hewan</h2>
+    <div class="animals" id="animals">
+      <div class="animal" data-h="🦌">🦌</div>
+      <div class="animal" data-h="🍶">🍶</div>
+      <div class="animal" data-h="🐓">🐓</div>
+      <div class="animal" data-h="🐟">🐟</div>
+      <div class="animal" data-h="🦀">🦀</div>
+      <div class="animal" data-h="🦐">🦐</div>
+    </div>
+    <div>
+      <button class="primary" id="btnShow">Pakai Pilihan</button>
+      <button id="btnRandom">Acak</button>
+      <button class="danger" id="btnClear">Bersihkan Pilihan</button>
+    </div>
+  </div>
+
+  <script>
+    const animals = document.querySelectorAll('.animal');
+    const channel = new BroadcastChannel("hewan-channel");
+    let selected = [];
+
+    animals.forEach(a => {
+      a.addEventListener('click', () => {
+        if (a.classList.contains('selected')) {
+          a.classList.remove('selected');
+          selected = selected.filter(x => x !== a.dataset.h);
+        } else {
+          if (selected.length < 3) {
+            a.classList.add('selected');
+            selected.push(a.dataset.h);
+          } else {
+            alert("Maksimal 3 hewan dipilih!");
+          }
+        }
+      });
+    });
+
+    document.getElementById("btnShow").onclick = () => {
+      let pool = ['🦌','🍶','🐓','🐟','🦀','🦐'];
+      let result = [...selected];
+      while(result.length < 3) {
+        result.push(pool[Math.floor(Math.random()*pool.length)]);
+      }
+      channel.postMessage({ type:"show", hewan: result });
+    };
+
+    document.getElementById("btnRandom").onclick = () => {
+      let pool = ['🦌','🍶','🐓','🐟','🦀','🦐'];
+      let result = [];
+      for(let i=0;i<3;i++) result.push(pool[Math.floor(Math.random()*pool.length)]);
+      channel.postMessage({ type:"show", hewan: result });
+    };
+
+    document.getElementById("btnClear").onclick = () => {
+      selected = [];
+      animals.forEach(a => a.classList.remove('selected'));
+    };
+  </script>
+</body>
+</html>

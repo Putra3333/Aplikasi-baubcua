@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bầu Cua – Mirip Asli</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --red-dark:#7c0000;
+      --red:#b10d0d;
+      --gold:#f7c84a;
+      --gold-dark:#b8871e;
+      --green:#018c2d;
+      --green-dark:#015d1e;
+      --card-red:#d61c1c;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background: radial-gradient(120% 120% at 50% -10%, #cc2a2a 0%, var(--red) 45%, var(--red-dark) 100%);
+      color:#fff;
+      display:flex;
+      justify-content:center;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .stage{ width:420px; position:relative; padding:0 12px 16px; }
+    .wood-top,.wood-bottom{
+      position:fixed; left:0; right:0; height:56px;
+      background:url("/img/kayu.jpg") center/cover no-repeat; z-index:5;
+    }
+    .wood-top{ top:0; } .wood-bottom{ bottom:0; }
+    .header-controls{
+      position:fixed; top:8px; left:0; right:0;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0 10px; z-index:6;
+    }
+    .btn-round{
+      width:64px; height:40px; display:flex; align-items:center; justify-content:center;
+      background:url("/img/tombol-atas.png") center/contain no-repeat;
+      cursor:pointer;
+    }
+    .btn-round img{ width:26px; height:26px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+
+    .chips{ margin-top:70px; display:flex; justify-content:space-between; gap:6px; }
+    .chip{
+      width:58px; height:58px; border-radius:50%; display:block; overflow:hidden;
+      cursor:pointer; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));
+      transition:transform .08s ease;
+    }
+    .chip:active{ transform:scale(.96); }
+    .chip img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    .plate-area{ position:relative; margin:16px auto 8px; width:100%; display:flex; justify-content:center; }
+    .plate-stack{ position:relative; width:270px; height:220px; }
+    .plate-base{
+      position:absolute; left:0; right:0; margin:auto;
+      width:270px; height:160px; top:36px;
+      background:url("/img/piring-dasar.png") center/contain no-repeat;
+      filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));
+    }
+    .dice-peek{
+      position:absolute; left:50px; top:74px; width:70px; height:70px;
+      background:url("/img/dadu.png") center/contain no-repeat;
+      transform:rotate(-18deg);
+    }
+    .cover{
+      position:absolute; left:50%; top:0; width:280px; height:180px;
+      transform:translateX(-50%) translateY(0);
+      background:url("/img/tutup-piring.png") center/contain no-repeat;
+      cursor:pointer; transition:transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+    .cover.open{ transform:translateX(-50%) translateY(-220px); }
+
+    .inside{ position:absolute; left:50%; top:92px; transform:translateX(-50%); display:flex; gap:10px; z-index:2; }
+    .inside img{ width:66px; height:66px; object-fit:contain; }
+
+    .balance-wrap{ margin:8px auto 6px; width:max-content; filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)); }
+    .balance{
+      padding:8px 14px; font-weight:800; font-size:22px; letter-spacing:.5px;
+      color:#fff;
+      background:linear-gradient(#0a3f18,#0a3f18) padding-box,
+                 linear-gradient(180deg,#fbe37a,#d7930f) border-box;
+      border:4px solid transparent; border-radius:8px;
+    }
+    .crown{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; margin-left:8px;
+      background:radial-gradient(circle at 30% 30%, #ffe087, #c98b16); border-radius:50%; border:2px solid #8a3f00;
+      box-shadow:0 2px 0 rgba(0,0,0,.35) inset; font-size:16px; }
+
+    .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:10px 0 14px; }
+    .tile{ position:relative; cursor:pointer; height:112px;
+      background:linear-gradient(#fff,#fff) padding-box,
+                 linear-gradient(180deg,#ff7b6e,#b70f0f) border-box;
+      border:6px solid transparent; border-radius:14px;
+      box-shadow:0 2px 0 rgba(0,0,0,.3) inset; display:flex; align-items:center; justify-content:center;
+    }
+    .tile img{ max-width:88%; max-height:88%; display:block; }
+    .bet-badge{ position:absolute; right:6px; bottom:6px;
+      background:rgba(0,0,0,.6); color:#fff; font-weight:700; padding:2px 6px;
+      border-radius:10px; font-size:13px; min-width:26px; text-align:center;
+    }
+    .gold-curve{ width:100%; height:46px; margin-top:6px;
+      background: radial-gradient(180% 140% at 50% -40%, rgba(255,199,71,1) 0%, rgba(255,160,0,1) 40%, rgba(255,160,0,0) 60%) no-repeat,
+                  linear-gradient(180deg,#f1ac2c,#de8b07) no-repeat;
+      background-size:100% 46px, 100% 6px; background-position:0 0, 0 40px;
+      border-bottom-left-radius:55% 46px; border-bottom-right-radius:55% 46px;
+      filter:drop-shadow(0 -1px 0 rgba(0,0,0,.25));
+    }
+    .chip.active{ outline:3px solid #fff; outline-offset:3px; border-radius:50%; }
+  </style>
+</head>
+<body>
+  <div class="wood-top"></div>
+  <div class="wood-bottom"></div>
+
+  <div class="header-controls">
+    <div class="btn-round" id="btnBack"><img src="/img/ikon-kembali.png" alt="Kembali"></div>
+    <div class="btn-round" id="btnGear"><img src="/img/ikon-pengaturan.png" alt="Pengaturan"></div>
+  </div>
+
+  <main class="stage">
+    <!-- CHIP -->
+    <div class="chips" id="chips">
+      <a class="chip"><img src="/img/chip-10rb.png" data-value="10000" alt="10Rb"></a>
+      <a class="chip"><img src="/img/chip-20rb.png" data-value="20000" alt="20Rb"></a>
+      <a class="chip"><img src="/img/chip-50rb.png" data-value="50000" alt="50Rb"></a>
+      <a class="chip"><img src="/img/chip-100rb.png" data-value="100000" alt="100Rb"></a>
+      <a class="chip"><img src="/img/chip-200rb.png" data-value="200000" alt="200Rb"></a>
+      <a class="chip"><img src="/img/chip-500rb.png" data-value="500000" alt="500Rb"></a>
+    </div>
+
+    <!-- PIRING -->
+    <section class="plate-area">
+      <div class="plate-stack">
+        <div class="plate-base"></div>
+        <div class="dice-peek"></div>
+        <div class="inside" id="inside"></div>
+        <div class="cover" id="cover" title="Buka/Tutup"></div>
+      </div>
+    </section>
+
+    <!-- SALDO -->
+    <div class="balance-wrap">
+      <div class="balance" id="balance">Rp 5.000.000 <span class="crown">👑</span></div>
+    </div>
+
+    <!-- GRID HEWAN -->
+    <section class="grid" id="grid">
+      <div class="tile" data-id="rusa"><img src="/img/rusa.png" alt="Rusa"><div class="bet-badge">0</div></div>
+      <div class="tile" data-id="labu"><img src="/img/labu.png" alt="Labu"><div class="bet-badge">0</div></div>
+      <div class="tile" data-id="ayam"><img src="/img/ayam.png" alt="Ayam"><div class="bet-badge">0</div></div>
+      <div class="tile" data-id="ikan"><img src="/img/ikan.png" alt="Ikan"><div class="bet-badge">0</div></div>
+      <div class="tile" data-id="kepiting"><img src="/img/kepiting.png" alt="Kepiting"><div class="bet-badge">0</div></div>
+      <div class="tile" data-id="udang"><img src="/img/udang.png" alt="Udang"><div class="bet-badge">0</div></div>
+    </section>
+
+    <div class="gold-curve"></div>
+  </main>
+
+  <script>
+    // ====== STATE ======
+    const pool = ["rusa","labu","ayam","ikan","kepiting","udang"];
+    let balance = 5_000_000;
+    let currentChip = 10_000;
+    const bets = Object.fromEntries(pool.map(k=>[k,0]));
+    const balanceEl = document.getElementById("balance");
+    const inside = document.getElementById("inside");
+    const cover = document.getElementById("cover");
+    const tiles = [...document.querySelectorAll(".tile")];
+    const chips = [...document.querySelectorAll(".chip img")];
+
+    const fmt = n => "Rp " + n.toLocaleString("id-ID");
+    function renderBalance(){ balanceEl.firstChild.nodeValue = fmt(balance)+" "; }
+    function setActiveChip(img){
+      document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      img.closest(".chip").classList.add("active");
+    }
+    function syncBets(){
+      tiles.forEach(t=>{
+        const id = t.dataset.id;
+        t.querySelector(".bet-badge").textContent = bets[id] ? bets[id].toLocaleString("id-ID") : "0";
+      });
+    }
+
+    chips.forEach(img=>{
+      if(+img.dataset.value === currentChip) setActiveChip(img);
+      img.addEventListener("click", ()=>{
+        currentChip = +img.dataset.value;
+        setActiveChip(img);
+      });
+    });
+
+    tiles.forEach(t=>{
+      t.addEventListener("click", ()=>{
+        if(balance < currentChip) return;
+        const activeKinds = Object.values(bets).filter(v=>v>0).length;
+        const id = t.dataset.id;
+        if(bets[id]===0 && activeKinds>=3){ return; }
+        bets[id]+= currentChip;
+        balance -= currentChip;
+        syncBets(); renderBalance();
+      });
+    });
+
+    function roll(n=3){
+      const res = [];
+      for(let i=0;i<n;i++) res.push(pool[Math.floor(Math.random()*pool.length)]);
+      return res;
+    }
+
+    function payout(result){
+      let win = 0;
+      const counts = result.reduce((m,k)=>(m[k]=(m[k]||0)+1,m),{});
+      for(const k of pool){
+        const stake = bets[k]||0;
+        if(!stake) continue;
+        if(counts[k]){
+          win += stake;
+          win += stake * counts[k];
+        }
+      }
+      balance += win;
+      pool.forEach(k=>bets[k]=0);
+      syncBets(); renderBalance();
+    }
+
+    function showResult(result){
+      inside.innerHTML = result.map(k=>`<img src="/img/${k}.png" alt="${k}">`).join("");
+    }
+
+    let open=false;
+    cover.addEventListener("click", ()=>{
+      if(!open){
+        const use = queuedFromController?.length===3 ? queuedFromController : roll();
+        queuedFromController = null;
+        showResult(use);
+        payout(use);
+        cover.classList.add("open");
+        open=true;
+      }else{
+        cover.classList.remove("open");
+        open=false;
+      }
+    });
+
+    let queuedFromController = null;
+    try{
+      const channel = new BroadcastChannel("hewan-channel");
+      channel.onmessage = (e)=>{
+        if(e.data?.type==="show" && Array.isArray(e.data.hewan) && e.data.hewan.length===3){
+          queuedFromController = e.data.hewan;
+        }
+      };
+    }catch(err){}
+
+    syncBets(); renderBalance();
+  </script>
+</body>
+</html>
