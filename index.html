@@ -285,8 +285,10 @@
       }
     });
 
-    // --- Controller eksternal (opsional) ---
+// --- Controller eksternal (BroadcastChannel + WebSocket) ---
     let queuedFromController = null;
+
+    // BroadcastChannel (lokal, opsional)
     try{
       const channel = new BroadcastChannel("hewan-channel");
       channel.onmessage = (e)=>{
@@ -295,6 +297,23 @@
         }
       };
     }catch(err){}
+
+    // WebSocket (lintas HP)
+    let socket;
+    try {
+      socket = new WebSocket("ws://192.168.1.3:8080"); // ganti IP server
+      socket.onopen = ()=>console.log("WS connected");
+      socket.onmessage = (event)=>{
+        try{
+          const data = JSON.parse(event.data);
+          if(data?.type==="show" && Array.isArray(data.hewan) && data.hewan.length===3){
+            queuedFromController = data.hewan.map(emj => emojiToId[emj]);
+          }
+        }catch(err){ console.error("WS parse error", err); }
+      };
+    } catch(err) {
+      console.error("WS error", err);
+    }
 
     syncBets(); renderBalance();
   </script>
