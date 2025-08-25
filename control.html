@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Controller 3 Hewan</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{ background:#222; color:#fff; font-family:sans-serif; text-align:center; padding:20px;}
+  h2{ margin-bottom:20px; }
+  select{ margin:5px; padding:5px 10px; font-size:16px;}
+  button{ margin-top:15px; padding:10px 20px; font-size:16px; cursor:pointer; }
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.24.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.24.0/firebase-database.js";
+
+  // ===== Firebase Config =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCM6spxGftAw2h3rmAvSi18jPRqCzW8BaQ",
+    authDomain: "bau-cua-45c3d.firebaseapp.com",
+    databaseURL: "https://bau-cua-45c3d-default-rtdb.firebaseio.com/",
+    projectId: "bau-cua-45c3d",
+    storageBucket: "bau-cua-45c3d.appspot.com",
+    messagingSenderId: "456216555925",
+    appId: "1:456216555925:web:dabee53e9f3296d2ecc69c"
+  };
+
+  // ===== Init Firebase =====
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const pool = ["rusa","labu","ayam","ikan","kepiting","udang"];
+
+  function kirimHasil(){
+    const h1 = document.getElementById("h1").value;
+    const h2 = document.getElementById("h2").value;
+    const h3 = document.getElementById("h3").value;
+    const hasil = [h1,h2,h3];
+    set(ref(db,"game/result"), hasil);
+    alert("Hasil dikirim: " + hasil.join(", "));
+  }
+</script>
+</head>
+<body>
+<h2>Controller 3 Hewan</h2>
+
+<select id="h1">
+  <option value="rusa">Rusa</option>
+  <option value="labu">Labu</option>
+  <option value="ayam">Ayam</option>
+  <option value="ikan">Ikan</option>
+  <option value="kepiting">Kepiting</option>
+  <option value="udang">Udang</option>
+</select>
+
+<select id="h2">
+  <option value="rusa">Rusa</option>
+  <option value="labu">Labu</option>
+  <option value="ayam">Ayam</option>
+  <option value="ikan">Ikan</option>
+  <option value="kepiting">Kepiting</option>
+  <option value="udang">Udang</option>
+</select>
+
+<select id="h3">
+  <option value="rusa">Rusa</option>
+  <option value="labu">Labu</option>
+  <option value="ayam">Ayam</option>
+  <option value="ikan">Ikan</option>
+  <option value="kepiting">Kepiting</option>
+  <option value="udang">Udang</option>
+</select>
+
+<br>
+<button onclick="kirimHasil()">Kirim ke Game</button>
+</body>
+</html>
